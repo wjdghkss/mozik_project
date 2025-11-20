@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mozik</title>
+    {% block extra_head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    {% endblock %}
+</head>
+<body class="{% block body_class %}layout-default{% endblock %}">
+    <!-- 공통 상단 네비 -->
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a href="{{ url_for('history') }}" class="site-logo">Mozik</a>
+            <nav class="site-nav">
+                {% if session.get("user_id") %}
+                <a href="{{ url_for('upload_video') }}">동영상</a>
+                <a href="{{ url_for('upload_image') }}">사진</a>
+                <a href="{{ url_for('history') }}">작업 기록</a>
+                <a href="{{ url_for('mypage') }}">마이페이지</a>
+                <a href="{{ url_for('logout') }}">로그아웃</a>
+                {% else %}
+            <a href="{{ url_for('login') }}">로그인</a>
+                <a href="{{ url_for('signup') }}" class="nav-primary">회원가입</a>
+                {% endif %}
+        </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="page-root">
+        {% block content %}
+        <section class="hero">
+            <div class="hero__text">
+                <h1>얼굴 모자이크,<br>몇 번의 클릭으로 끝.</h1>
+                <p>
+                    사진 속 개인정보를 간편하게 보호하세요.<br>
+                    동영상이나 사진을 업로드하면 자동으로 모자이크가 적용됩니다.
+                </p>
+                {% if session.get("user_id") %}
+                <a class="hero__cta" href="{{ url_for('history') }}">지금 바로 시작하기</a>
+                {% else %}
+                <div class="hero__cta-group">
+                    <a class="hero__cta" href="{{ url_for('login') }}">로그인하고 시작하기</a>
+                    <a class="hero__cta hero__cta--ghost" href="{{ url_for('signup') }}">회원가입</a>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

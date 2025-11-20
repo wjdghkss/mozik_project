@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="mypage-hero">
+    <div>
+        <p class="eyebrow">My Page</p>
+        <h1>마이페이지</h1>
+        <p class="subtext">
+            계정 정보를 관리하고 설정을 변경할 수 있어요.
+        </p>
+    </div>
+</section>
+
+<section class="mypage-container">
+    <div class="mypage-grid">
+        <!-- 사용자 정보 카드 -->
+        <div class="mypage-card">
+            <div class="mypage-card__header">
+                <h2>사용자 정보</h2>
+            </div>
+            <div class="mypage-card__body">
+                <div class="user-profile">
+                    <div class="user-avatar-large">
+                        {% if user_info and user_info.name and user_info.name|length > 0 %}
+                            {{ user_info.name[0] }}
+                        {% else %}
+                            사용
+                        {% endif %}
+                    </div>
+                    <div class="user-profile__info">
+                        <div class="user-profile__name">
+                            {% if user_info and user_info.name %}
+                                {{ user_info.name }}
+                            {% else %}
+                                사용자
+                            {% endif %}
+                        </div>
+                        <div class="user-profile__email">
+                            {% if user_info and user_info.email %}
+                                {{ user_info.email }}
+                            {% else %}
+                                이메일 없음
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 이메일 변경 -->
+        <div class="mypage-card">
+            <div class="mypage-card__header">
+                <h2>이메일 변경</h2>
+            </div>
+            <div class="mypage-card__body">
+                <button type="button" class="action-btn" onclick="toggleForm('emailForm')">
+                    이메일 변경하기
+                </button>
+                <div class="slide-form" id="emailForm">
+                    <form method="POST" action="{{ url_for('change_email') }}" class="mypage-form">
+                        <div class="form-field">
+                            <label for="new_email">새 이메일</label>
+                            <input type="email" id="new_email" name="new_email" required placeholder="새 이메일을 입력하세요">
+                        </div>
+                        <div class="form-field">
+                            <label for="password_email">현재 비밀번호</label>
+                            <input type="password" id="password_email" name="password" required placeholder="비밀번호를 입력하세요">
+                        </div>
+                        <button type="submit" class="form-btn">이메일 변경</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 비밀번호 변경 -->
+        <div class="mypage-card">
+            <div class="mypage-card__header">
+                <h2>비밀번호 변경</h2>
+            </div>
+            <div class="mypage-card__body">
+                <button type="button" class="action-btn" onclick="toggleForm('passwordForm')">
+                    비밀번호 변경하기
+                </button>
+                <div class="slide-form" id="passwordForm">
+                    <form method="POST" action="{{ url_for('change_password') }}" class="mypage-form">
+                        <div class="form-field">
+                            <label for="current_password">현재 비밀번호</label>
+                            <input type="password" id="current_password" name="current_password" required placeholder="현재 비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-field">
+                            <label for="new_password">새 비밀번호</label>
+                            <input type="password" id="new_password" name="new_password" required placeholder="새 비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-field">
+                            <label for="confirm_password">새 비밀번호 확인</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required placeholder="새 비밀번호를 다시 입력하세요">
+                        </div>
+                        <button type="submit" class="form-btn">비밀번호 변경</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 본인 얼굴 등록 -->
+        <div class="mypage-card">
+            <div class="mypage-card__header">
+                <h2>본인 얼굴 등록</h2>
+            </div>
+            <div class="mypage-card__body">
+                {% if user_info and user_info.face_image %}
+                <div class="face-preview">
+                    <p>등록된 얼굴:</p>
+                    <img src="{{ url_for('uploaded_file', filename=user_info.face_image) }}" alt="등록된 얼굴">
+                </div>
+                {% endif %}
+                <button type="button" class="action-btn" onclick="toggleForm('faceForm')">
+                    {% if user_info and user_info.face_image %}얼굴 사진 변경하기{% else %}얼굴 사진 등록하기{% endif %}
+                </button>
+                <div class="slide-form" id="faceForm">
+                    <form method="POST" action="{{ url_for('register_face') }}" enctype="multipart/form-data" class="mypage-form">
+                        <div class="form-field">
+                            <label for="face_image">얼굴 사진 (선택사항)</label>
+                            <div class="file-upload-area">
+                                <input type="file" id="face_image" name="face_image" accept="image/*">
+                                <label for="face_image" class="file-upload-label">
+                                    <span class="file-upload-icon">📷</span>
+                                    <span class="file-upload-text">사진 선택</span>
+                                </label>
+                            </div>
+                            <p class="form-hint">본인의 얼굴이 명확하게 보이는 사진을 등록해주세요. (선택사항)</p>
+                        </div>
+                        <button type="submit" class="form-btn">얼굴 등록</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 계정 삭제 -->
+        <div class="mypage-card mypage-card--danger">
+            <div class="mypage-card__header">
+                <h2>계정 삭제</h2>
+            </div>
+            <div class="mypage-card__body">
+                <p class="danger-text">계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.</p>
+                <button type="button" class="action-btn action-btn--danger" onclick="toggleForm('deleteForm')">
+                    계정 삭제하기
+                </button>
+                <div class="slide-form" id="deleteForm">
+                    <form method="POST" action="{{ url_for('delete_account') }}" class="mypage-form" onsubmit="return confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                        <div class="form-field">
+                            <label for="delete_password">비밀번호 확인</label>
+                            <input type="password" id="delete_password" name="password" required placeholder="계정 삭제를 위해 비밀번호를 입력하세요">
+                        </div>
+                        <button type="submit" class="form-btn form-btn--danger">계정 삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if messages %}
+<div class="mypage-messages">
+    {% for message in messages %}
+    <div class="message message--{{ message.type }}">
+        {{ message.text }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('face_image');
+    const fileLabel = document.querySelector('.file-upload-label');
+    
+    if (fileInput && fileLabel) {
+        fileInput.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || '사진 선택';
+            const textSpan = fileLabel.querySelector('.file-upload-text');
+            if (textSpan) {
+                textSpan.textContent = fileName;
+            }
+        });
+    }
+});
+
+function toggleForm(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    const isOpen = form.classList.contains('active');
+    
+    // 모든 폼 닫기
+    document.querySelectorAll('.slide-form').forEach(f => {
+        f.classList.remove('active');
+    });
+    
+    // 클릭한 폼이 닫혀있었다면 열기
+    if (!isOpen) {
+        form.classList.add('active');
+        // 스크롤을 폼 위치로 이동
+        setTimeout(() => {
+            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+}
+</script>
+{% endblock %}

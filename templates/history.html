@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="history-hero">
+    <div>
+        <p class="eyebrow">History</p>
+        <h1>작업 기록</h1>
+        <p class="subtext">
+            지금까지 처리한 모든 작업을 확인할 수 있어요.
+        </p>
+    </div>
+</section>
+
+<section class="history-container">
+    {% if jobs %}
+    <div class="history-list">
+        {% for job in jobs %}
+        <div class="history-card">
+            <div class="history-card__header">
+                <div class="history-card__info">
+                    <h3>{{ job.original_filename if job.original_filename else '알 수 없음' }}</h3>
+                    <p class="history-card__meta">
+                        <span class="history-date">
+                            {% if job.created_at %}
+                                {{ job.created_at.strftime('%Y년 %m월 %d일 %H:%M') }}
+                            {% else %}
+                                날짜 없음
+                            {% endif %}
+                        </span>
+                        <span class="history-badge history-badge--{{ job.status if job.status else 'unknown' }}">
+                            {{ job.status if job.status else '알 수 없음' }}
+                        </span>
+                    </p>
+                </div>
+                <div class="history-card__actions">
+                    {% if job.output_filename %}
+                    <a href="{{ url_for('uploaded_file', filename=job.output_filename) }}" class="history-btn" target="_blank">결과 보기</a>
+                    {% else %}
+                    <span class="history-btn" style="opacity: 0.5; cursor: not-allowed;">결과 없음</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="history-card__details">
+                <div class="history-detail">
+                    <span class="history-detail__label">블러 강도</span>
+                    <span class="history-detail__value">{{ job.blur_strength if job.blur_strength else '0' }}</span>
+                </div>
+                <div class="history-detail">
+                    <span class="history-detail__label">원본 파일</span>
+                    <span class="history-detail__value">{{ job.original_filename if job.original_filename else '알 수 없음' }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="history-empty">
+        <p>아직 작업 기록이 없어요.</p>
+        <div class="history-empty__actions">
+            <a href="{{ url_for('upload_image') }}" class="history-empty__btn">사진</a>
+            <a href="{{ url_for('upload_video') }}" class="history-empty__btn">동영상</a>
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
